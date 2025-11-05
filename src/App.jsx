@@ -1,7 +1,8 @@
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
-import VoiceShowcase from "./components/VoiceShowcase";
+import ARViewer from "./components/ARViewer";
+import VoiceCapture from "./components/VoiceCapture";
 import CallToAction from "./components/CallToAction";
 
 function App() {
@@ -11,7 +12,8 @@ function App() {
       <main>
         <Hero />
         <Features />
-        <VoiceShowcase />
+        <ARViewer />
+        <VoiceCapture />
         <CallToAction />
       </main>
       <footer className="py-10 border-t border-gray-200">
@@ -20,6 +22,7 @@ function App() {
           <div className="flex items-center gap-4">
             <a href="#features" className="hover:text-gray-900">Features</a>
             <a href="#voice" className="hover:text-gray-900">Voice</a>
+            <a href="#ar" className="hover:text-gray-900">AR</a>
             <a href="#cta" className="hover:text-gray-900">Get Started</a>
           </div>
         </div>
