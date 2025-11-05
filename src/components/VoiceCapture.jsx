@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square, Volume2 } from "lucide-react";
 
-export default function VoiceCapture() {
+export default function VoiceCapture({ onCommand, onTranscript }) {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [supported, setSupported] = useState({ speech: false, mic: false });
@@ -37,6 +37,30 @@ export default function VoiceCapture() {
     return () => stopAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!transcript) return;
+    onTranscript?.(transcript);
+
+    // lightweight intent detection
+    const text = transcript.toLowerCase();
+    const intents = [
+      { key: "sit", match: ["sit", "seat"], intent: "sit" },
+      { key: "jump", match: ["jump", "hop"], intent: "jump" },
+      { key: "eat", match: ["eat", "food", "snack"], intent: "eat" },
+      { key: "sleep", match: ["sleep", "nap", "rest"], intent: "sleep" },
+      { key: "come", match: ["come here", "come", "over here"], intent: "come" },
+      { key: "praise", match: ["good job", "good boy", "good girl", "nice"], intent: "praise" },
+      { key: "hello", match: ["hello", "hi", "hey"], intent: "hello" },
+    ];
+
+    for (const item of intents) {
+      if (item.match.some((m) => text.includes(m))) {
+        onCommand?.(item.intent);
+        break;
+      }
+    }
+  }, [transcript, onCommand, onTranscript]);
 
   const drawLevels = () => {
     const canvas = canvasRef.current;
@@ -106,26 +130,6 @@ export default function VoiceCapture() {
     }
     setIsRecording(false);
   };
-
-  const speakBack = (text) => {
-    if (!("speechSynthesis" in window)) return;
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 1.0;
-    utter.pitch = 1.0;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utter);
-  };
-
-  useEffect(() => {
-    if (!transcript) return;
-    const latest = transcript.toLowerCase();
-    // Simple intent mapping for demo
-    if (latest.includes("sit")) speakBack("Sitting now! Woof.");
-    else if (latest.includes("jump")) speakBack("Jump! So high!");
-    else if (latest.includes("eat") || latest.includes("food")) speakBack("Yum! Thanks for the snack.");
-    else if (latest.includes("sleep")) speakBack("Okay, nap time. Zzz.");
-    else if (latest.includes("come here") || latest.includes("come")) speakBack("Coming to you!");
-  }, [transcript]);
 
   return (
     <section id="voice" className="py-16 lg:py-24">
